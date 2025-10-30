@@ -1,11 +1,12 @@
-from typing import Union, Optional, List
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base 
 from sqlalchemy.orm import sessionmaker, Session
 from pydantic import BaseModel
-#from .models import Item
-#from .calcul import calc_int
+import joblib
+import pandas as pd
+import numpy as np 
+
 
 app = FastAPI(title="Integration With SQL")
 
@@ -17,7 +18,7 @@ Base = declarative_base()
 class patient_model(Base):
     __tablename__ = "patients"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
+    name = Column(String)
     age = Column(Integer)
     gender = Column(Integer)
     pressurehight = Column(Integer)
@@ -33,13 +34,24 @@ Base.metadata.create_all(engine)
 class PatientResponse(BaseModel):
     name : str
     age : int
-    gender: int
-    pressurehight: float
-    pressurelow: float
-    glucose: float
-    kcm: float
-    troponin: float
-    impluse: float
+    gender : float
+    pressurehight : float
+    pressurelow : float
+    glucose : float
+    kcm : float
+    troponin : float
+    impluse : float
+    
+class PatientGet(BaseModel):
+    age : int
+    gender : float
+    pressurehight : float
+    pressurelow : float
+    glucose : float
+    kcm : float
+    troponin : float
+    impluse : float
+    
 
 class Config:
     from_attributes = True
@@ -51,75 +63,41 @@ def get_db():
     finally:
         db.close()
 
-#get_db()
+# get_db()
 
-# --- endpoint à la racine
+# --- endpoint Ã  la racine
 @app.get('/')
 def read_root():
     return {"message" : "bienvenue sur mon API"}
 
-@app.get("/Patients/", response_model=PatientResponse)
-def get_patients(user_id:int, db:Session=Depends(get_db)):
+@app.get("/patients/", response_model=list[PatientResponse])
+def get_patients(db:Session = Depends(get_db)):
     Patients = db.query(patient_model).all()
-    if not Patients:
-        raise HTTPException(status_code=404, detail="Patient Not Found")
     return Patients
 
-@app.post("/users/", response_model=PatientResponse)
-def add_patient(patient: patient_model, db:Session=Depends(get_db)):
-    if db.query(patient_model):
-        raise HTTPException(status_code=44, detail="User already exists !")
-    # Create a new user
-    new_patient = patient(**patient.dict())
-    db.add(new_patient)
+
+@app.post("/patients/", response_model=PatientResponse)
+def add_patients(new_patient:PatientResponse, db: Session = Depends(get_db)):
+    db_patient = patient_model(**new_patient.model_dump())
+    db.add(db_patient)
     db.commit()
-    db.refresh(new_patient)
-    return new_patient
+    db.refresh(db_patient)
+    return db_patient
+
+@app.get('/patients/{P_id}', response_model=PatientResponse)
+def get_patient(P_id : int,db:Session = Depends(get_db)):
+    db_Patient = db.query(patient_model).filter(patient_model.id == P_id).first()
+    if not db_Patient :
+        raise HTTPException(status_code=404, detail="Not Found")
+    return db_Patient
 
 
-"""
-#Update user
-@app.put("/user/{user_id}", response_model=UserResponse)
-def update_user(user_id:int, user:UserCreate, db:Session=Depends(get_db)):
-    db_user = db.query(User).filter(User.id == user.id).first()
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User already exists ! ")
+@app.get('/patients/Pred_risk/{P_id}',response_model=PatientGet)
+def Prediction_get(P_id : int, db:Session = Depends(get_db)):
+    db_Patient = db.query(patient_model).filter(patient_model.id == P_id).first()
+    if not db_Patient :
+        raise HTTPException(status_code=404, detail="Not Found Patient")   
+    My_Model = joblib.load("Model/joblib.dump")
+    Prediction = My_Model.predict(db_Patient)
     
-    for field, value in user.dict().item():
-        setattr(db_user, field, value)
-    
-    db.commit()
-    db.refresh(db_user)
-    return db_user
-
-#delete user
-@app.delete("/users/{user_id}")
-def delete_user(user_id:int,db:Session = Depends(get_db)):
-    db_user = db.query(User).filter(User.id == user.id).first()
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User already exists ! ")
-    
-    db.delete(db_user)
-    db.commit()
-    return db_user
-
-# ---  Get All Users
-@app.get("/users/", response_model=List[UserResponse])
-def get_all_users(db:Session=Depends(get_db)):
-    return db.query(User).all()
-
-
-@app.get("/items/{item_id}")
-async def read_item(item_id : int, q : Union[str, None] = None):
-    return {"item_id" : item_id, "q" : q}
-
-
-@app.get("/get_cal")
-def get_cal(a:int, b:int, opt:str):
-    return {"resultat" : calc_int(a,b,opt)}
-#endpoint : ressource 'item'
-
-app.get('/Items')
-def get_all_items():
-    return {"msg" : " lister tous les items "}"""
-
+    return Prediction
