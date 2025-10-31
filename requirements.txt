@@ -1,0 +1,6 @@
+# Votre liste de dépendances : 
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+pandas
