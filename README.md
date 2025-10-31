@@ -1,77 +1,158 @@
-# Pipeline d'Apprentissage Automatique pour la Prédiction du Statut Patient Integret avec SqlLite (Backend)
+API de Prédiction de Risque Cardiaque (Cardio Risk API)
 
-## Partier de entraiment et Creation Model : 
+Cette API, développée avec FastAPI, utilise un modèle de Machine Learning (Random Forest) pour prédire le risque de maladie cardiaque (positif/négatif) en se basant sur les données d'un patient.
 
-Cette partie contient un Notebook Jupyter (`NoteBook.ipynb`) qui implémente un pipeline complet d'apprentissage automatique pour prédire le statut d'un patient (`positive` ou `negative`) basé sur divers indicateurs de santé.
+Elle fournit également des points de terminaison (endpoints) pour gérer une base de données de patients via des opérations CRUD (Create, Read).
 
-Le notebook couvre le chargement des données, l'exploration initiale, l'ingénierie des fonctionnalités, l'entraînement du modèle, l'évaluation et la persistance du modèle.
+Technologies Utilisées
 
-### Structure du Projet
+Backend : FastAPI, Uvicorn
 
-Les fichiers principaux de ce projet sont :
+Base de Données : SQLite (via SQLAlchemy)
 
-| Fichier | Description |
-| :--- | :--- |
-| `NoteBook.ipynb` | Le Notebook Jupyter principal contenant le flux de travail complet d'apprentissage automatique. |
-| `data-68fe0fb66c2ee565848417.csv` | Le jeu de données utilisé pour l'entraînement et l'évaluation (nécessaire pour exécuter le notebook). |
-| `joblib.dump` | Le modèle d'apprentissage automatique entraîné, sauvegardé à l'aide de `joblib` pour une utilisation ultérieure. |
+Validation de Données : Pydantic
 
-### Données
+Machine Learning : Scikit-learn (RandomForestClassifier, SelectKBest, Pipeline), Pandas
 
-Le jeu de données contient les fonctionnalités suivantes, qui semblent être liées à la santé du patient :
+Sérialisation du Modèle : Joblib
 
-| Nom de la Colonne | Type de Données | Description |
-| :--- | :--- | :--- |
-| `age` | Entier | Âge du patient. |
-| `gender` | Entier | Sexe du patient (probablement encodé en 0 et 1). |
-| `pressurehight` | Entier | Lecture de la pression artérielle élevée (systolique). |
-| `pressurelow` | Entier | Lecture de la pression artérielle basse (diastolique). |
-| `glucose` | Flottant | Niveau de glucose. |
-| `kcm` | Flottant | Niveau de KCM (probablement un marqueur cardiaque). |
-| `troponin` | Flottant | Niveau de troponine (un marqueur cardiaque clé). |
-| `impluse` | Entier | Pouls/Fréquence cardiaque. |
-| **`status`** | Objet (Cible) | La variable cible à prédire (`positive` ou `negative`). |
+Installation et Lancement
 
-### Méthodologie
+Cloner le dépôt
 
-Le flux de travail d'apprentissage automatique mis en œuvre dans le notebook suit ces étapes :
+git clone [URL_DE_VOTRE_DEPOT]
+cd [NOM_DU_DOSSIER]
 
-1.  **Chargement et Nettoyage des Données :** Les données sont chargées à partir de `data-68fe0fb66c2ee565848417.csv`. Le notebook inclut des vérifications des lignes en double et des valeurs manquantes.
-2.  **Analyse Exploratoire des Données (AED) :** Le notebook comprend des visualisations (par exemple, des CountPlots pour `gender` et `status`) pour comprendre la distribution des données.
-3.  **Ingénierie des Fonctionnalités :** La variable cible catégorielle (`status`) est convertie en un format numérique (`0` et `1`).
-4.  **Entraînement du Modèle :** Un **Classifieur Forêt Aléatoire** (Random Forest Classifier) est entraîné à l'aide d'un `Pipeline` qui intègre la **Sélection de Fonctionnalités** (`SelectKBest` avec `f_classif`).
-5.  **Évaluation :** La performance du modèle est évaluée à l'aide de l'**Exactitude** (Accuracy) et du **Score F1**.
-    *   **Exactitude Observée :** ~0.981
-    *   **Score F1 Observé :** ~0.985
-6.  **Persistance du Modèle :** Le modèle `Pipeline` final entraîné est sauvegardé sur disque sous le nom `joblib.dump` à l'aide de la bibliothèque `joblib`.
 
-### Comment Exécuter le Notebook
+Créer un environnement virtuel
 
-#### Prérequis
+python -m venv venv
+source venv/bin/activate  # Sur Windows: venv\Scripts\activate
 
-Vous devez avoir Python et les bibliothèques suivantes installées :
 
-*   `pandas`
-*   `matplotlib`
-*   `seaborn`
-*   `scikit-learn`
-*   `joblib`
-*   `jupyter` (pour exécuter le notebook)
+Installer les dépendances
+(Créez un fichier requirements.txt avec le contenu ci-dessous, puis exécutez pip install -r requirements.txt)
 
-Vous pouvez installer les bibliothèques requises en utilisant `pip` :
+contenu de requirements.txt:
 
-```bash
-pip install pandas matplotlib seaborn scikit-learn joblib jupyter
-```
+fastapi
+uvicorn[standard]
+sqlalchemy
+pydantic
+joblib
+pandas
+numpy
+scikit-learn
 
-#### Exécution
 
-1.  Assurez-vous que le fichier `data-68fe0fb66c2ee565848417.csv` se trouve dans le même répertoire que le `NoteBook.ipynb`. (Note : Ce fichier n'a pas été fourni, vous devrez donc le fournir pour exécuter le notebook avec succès).
-2.  Ouvrez le Notebook Jupyter :
-    ```bash
-    jupyter notebook NoteBook.ipynb
-    ```
-3.  Exécutez toutes les cellules du notebook séquentiellement.
+Démarrer l'API
+L'API (main.py) s'attend à trouver le modèle dans un dossier Model/. Assurez-vous de placer joblib.dump dans Model/joblib.dump ou de modifier le chemin dans main.py.
 
-Les dernières cellules entraîneront le modèle, évalueront ses performances et sauvegarderont le modèle sous le nom `joblib.dump`. Le notebook inclut également un cas de test pour démontrer le chargement du modèle sauvegardé et la réalisation d'une prédiction pour un seul patient.
+uvicorn main:app --reload
 
+
+Accéder à l'API
+
+API : http://127.0.0.1:8000
+
+Documentation (Swagger) : http://127.0.0.1:8000/docs
+
+À Propos du Modèle de Machine Learning
+
+Le modèle (défini dans NoteBook.ipynb et sauvegardé dans joblib.dump) est un Pipeline Scikit-learn qui effectue deux étapes :
+
+Sélection de Caractéristiques (Features)
+
+Utilise SelectKBest (avec f_classif, k=4) pour sélectionner les 4 caractéristiques les plus prédictives.
+
+D'après le notebook, les caractéristiques sélectionnées sont : age, gender, kcm, troponin.
+
+Modèle de Classification
+
+Un RandomForestClassifier est utilisé pour la prédiction binaire (positif/négatif).
+
+Performance du Modèle
+
+(Basée sur l'ensemble de test du Notebook)
+
+Accuracy : 0.981
+
+F1-Score : 0.984
+
+Structure de la Base de Données
+
+L'API utilise une base de données SQLite (patients.db) avec une table : patients.
+
+Schéma de la table patients :
+
+id (Integer, Primary Key)
+
+name (String)
+
+age (Integer)
+
+gender (Integer)
+
+pressurehight (Integer)
+
+pressurelow (Integer)
+
+glucose (Integer)
+
+kcm (Integer)
+
+troponin (Integer)
+
+impluse (Integer)
+
+Endpoints de l'API
+
+Consultez la documentation interactive sur http://127.0.0.1:8000/docs pour tester les endpoints.
+
+GET /
+
+Description : Message de bienvenue de l'API.
+
+Réponse :
+
+{ "message": "bienvenue sur mon API" }
+
+
+POST /patients/
+
+Description : Ajoute un nouveau patient à la base de données.
+
+Corps (Body) attendu :
+
+{
+  "name": "John Doe",
+  "age": 60,
+  "gender": 1.0,
+  "pressurehight": 98.0,
+  "pressurelow": 46.0,
+  "glucose": 296.0,
+  "kcm": 1.75,
+  "troponin": 0.06,
+  "impluse": 94.0
+}
+
+
+Réponse : L'objet patient créé (incluant son id).
+
+GET /patients/
+
+Description : Récupère la liste de tous les patients enregistrés dans la base de données.
+
+Réponse : Une liste d'objets PatientResponse.
+
+GET /patients/{P_id}
+
+Description : Récupère un patient spécifique par son id.
+
+Réponse : Un objet PatientResponse.
+
+GET /patients/Pred_risk/{P_id}
+
+Description : Prédit le risque cardiaque (positif/négatif) pour un patient spécifique identifié par son P_id dans la base de données.
+
+Réponse : Note : Le code actuel dans main.py retourne les données du patient (PatientGet) et non la prédiction. Le modèle s'attend à recevoir un DataFrame pandas pour la prédiction.
