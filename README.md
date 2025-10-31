@@ -4,7 +4,7 @@ Ce dépôt contient un Notebook Jupyter (`NoteBook.ipynb`) qui implémente un pi
 
 Le notebook couvre le chargement des données, l'exploration initiale, l'ingénierie des fonctionnalités, l'entraînement du modèle, l'évaluation et la persistance du modèle.
 
-## 📁 Structure du Projet
+## Structure du Projet
 
 Les fichiers principaux de ce projet sont :
 
@@ -14,7 +14,7 @@ Les fichiers principaux de ce projet sont :
 | `data-68fe0fb66c2ee565848417.csv` | Le jeu de données utilisé pour l'entraînement et l'évaluation (nécessaire pour exécuter le notebook). |
 | `joblib.dump` | Le modèle d'apprentissage automatique entraîné, sauvegardé à l'aide de `joblib` pour une utilisation ultérieure. |
 
-## 📊 Données
+## Données
 
 Le jeu de données contient les fonctionnalités suivantes, qui semblent être liées à la santé du patient :
 
@@ -30,7 +30,7 @@ Le jeu de données contient les fonctionnalités suivantes, qui semblent être l
 | `impluse` | Entier | Pouls/Fréquence cardiaque. |
 | **`status`** | Objet (Cible) | La variable cible à prédire (`positive` ou `negative`). |
 
-## 🛠️ Méthodologie
+## Méthodologie
 
 Le flux de travail d'apprentissage automatique mis en œuvre dans le notebook suit ces étapes :
 
@@ -43,7 +43,7 @@ Le flux de travail d'apprentissage automatique mis en œuvre dans le notebook su
     *   **Score F1 Observé :** ~0.985
 6.  **Persistance du Modèle :** Le modèle `Pipeline` final entraîné est sauvegardé sur disque sous le nom `joblib.dump` à l'aide de la bibliothèque `joblib`.
 
-## 🚀 Comment Exécuter le Notebook
+## Comment Exécuter le Notebook
 
 ### Prérequis
 
