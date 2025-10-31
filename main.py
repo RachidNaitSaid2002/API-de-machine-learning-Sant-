@@ -103,6 +103,5 @@ def Prediction_get(P_id : int, db:Session = Depends(get_db)):
     if not db_Patient :
         raise HTTPException(status_code=404, detail="Not Found Patient")   
     My_Model = joblib.load("Model/joblib.dump")
-    Prediction = My_Model.predict(db_Patient)
-    
+    Prediction = My_Model.predict(db_Patient)    
     return Prediction
