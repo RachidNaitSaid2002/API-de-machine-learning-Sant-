@@ -2,7 +2,7 @@
 
 ## Partier de entraiment et Creation Model : 
 
-Ce dépôt contient un Notebook Jupyter (`NoteBook.ipynb`) qui implémente un pipeline complet d'apprentissage automatique pour prédire le statut d'un patient (`positive` ou `negative`) basé sur divers indicateurs de santé.
+Cette partie contient un Notebook Jupyter (`NoteBook.ipynb`) qui implémente un pipeline complet d'apprentissage automatique pour prédire le statut d'un patient (`positive` ou `negative`) basé sur divers indicateurs de santé.
 
 Le notebook couvre le chargement des données, l'exploration initiale, l'ingénierie des fonctionnalités, l'entraînement du modèle, l'évaluation et la persistance du modèle.
 
