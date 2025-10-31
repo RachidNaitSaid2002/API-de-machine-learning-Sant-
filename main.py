@@ -7,7 +7,7 @@ import joblib
 import pandas as pd
 
 
-app = FastAPI(title="Integration With SQL")
+app = FastAPI(title="Cardio Risk Prediction")
 
 # --- DataBase Setup
 engine = create_engine("sqlite:///./patients.db", connect_args={"check_same_thread":False})
