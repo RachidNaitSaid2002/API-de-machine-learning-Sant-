@@ -7,8 +7,7 @@ import joblib
 import pandas as pd
 import numpy as np 
 
-
-app = FastAPI(title="Integration With SQL")
+app = FastAPI(title="Cardio Risk API")
 
 # --- DataBase Setup
 engine = create_engine("sqlite:///./patients.db", connect_args={"check_same_thread":False})
@@ -41,7 +40,8 @@ class PatientResponse(BaseModel):
     kcm : float
     troponin : float
     impluse : float
-    
+
+#Specifique : que les donnees medicales Sans Nom
 class PatientGet(BaseModel):
     age : int
     gender : float
@@ -52,10 +52,11 @@ class PatientGet(BaseModel):
     troponin : float
     impluse : float
     
-
+#lire les donnees depuis DB --> API
 class Config:
     from_attributes = True
 
+#ex : cle d'une chambre à l'hotel
 def get_db():
     db = SessionLocal()
     try:
@@ -65,12 +66,16 @@ def get_db():
 
 # get_db()
 
-# --- endpoint Ã  la racine
+# --- endpoint à la racine : Home
 @app.get('/')
 def read_root():
     return {"message" : "bienvenue sur mon API"}
 
+#lire l'onglet : Patients
 @app.get("/patients/", response_model=list[PatientResponse])
+#R.Model : - garde du corps ---> priver password et ID de la liste à envoyer 
+#          - age == [Integer] , Name == [String]
+#          - list : definir la forme de return comme Liste  
 def get_patients(db:Session = Depends(get_db)):
     Patients = db.query(patient_model).all()
     return Patients
