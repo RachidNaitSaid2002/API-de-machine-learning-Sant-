@@ -3,3 +3,4 @@ fastAPI-env
 __pycache__
 .pytest_cache
 patients.db
+Model/
